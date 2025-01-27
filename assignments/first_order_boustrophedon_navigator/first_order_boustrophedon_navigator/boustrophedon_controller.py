@@ -19,11 +19,11 @@ class BoustrophedonController(Node):
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('Kp_linear', 10.0),
-                ('Kd_linear', 0.5),
-                ('Kp_angular', 10.0),
-                ('Kd_angular', 0.5),
-                ('spacing', 1.0)
+                ('Kp_linear', 2.8),
+                ('Kd_linear', 0.02),
+                ('Kp_angular', 11.8),
+                ('Kd_angular', 0.03),
+                ('spacing', 1.5)
             ]
         )
         
