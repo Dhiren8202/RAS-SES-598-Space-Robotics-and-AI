@@ -1,208 +1,153 @@
-# First-Order Boustrophedon Navigator
-![image](https://github.com/user-attachments/assets/940fc6bc-fcee-4d11-8bc8-d53a650aaf80)
+# First-Order Boustrophedon Navigator (Lawnmower Pattern) Using ROS2
 
-In this assignment, you will understand the provided code in ROS2 with Turtlesim, and refactor and/or tune the navigator to implement a precise lawnmower survey (a boustrophedon pattern). The current code will do a pattern shown above, which is not a uniform lawnmower survey. 
-Explore literature on how lawnmower surveys typically look, and modify the code to meet the requirements for a uniform survey. 
+## Turtlesim Output Image
+![Screenshot from 2025-01-27 23-48-18](https://github.com/user-attachments/assets/0384207b-e959-4687-bf61-0bb3eca7019a)
 
-## Background
-Boustrophedon patterns (from Greek: "ox-turning", like an ox drawing a plow) are fundamental coverage survey trajectories useful in space exploration and Earth observation. These patterns are useful for:
 
-- **Space Exploration**: Rovers could use boustrophedon patterns to systematically survey areas of interest, ensuring complete coverage when searching for geological samples or mapping terrain. However, due to energy constraints, informative paths are usually optimized, and this results in paths that are sparser than complete coverage sampling, and may still produce high-accuracy reconstructions. 
-  
-- **Earth Observation**: Aerial vehicles employ these patterns for:
-  - Agricultural monitoring and precision farming
-  - Search and rescue operations
-  - Environmental mapping and monitoring
-  - Geological or archaeological surveys
-  
-- **Ocean Exploration**: Autonomous underwater vehicles (AUVs) use boustrophedon patterns to:
-  - Map the ocean floor
-  - Search for shipwrecks or aircraft debris
-  - Monitor marine ecosystems
-  
-The efficiency and accuracy of these surveys depend heavily on the robot's ability to follow the prescribed path with minimal deviation (cross-track error). This assignment simulates these real-world challenges in a 2D environment using a first-order dynamical system (the turtlesim robot).
 
-## Objective
-Tune a PD controller to make a first-order system execute the most precise boustrophedon pattern possible. The goal is to minimize the cross-track error while maintaining smooth motion.
+---
 
-## Learning Outcomes
-- Understanding PD control parameters and their effects on first-order systems
-- Practical experience with controller tuning
-- Analysis of trajectory tracking performance
-- ROS2 visualization and debugging
+## Overview
 
-## Prerequisites
+This project implements a first-order boustrophedon navigator for the Turtlesim in ROS2. The primary goal was to execute a precise lawnmower survey pattern while minimizing cross-track error and maintaining smooth motion.
 
-### System Requirements
-Choose one of the following combinations:
-- Ubuntu 22.04 + ROS2 Humble
-- Ubuntu 23.04 + ROS2 Iron
-- Ubuntu 23.10 + ROS2 Iron
-- Ubuntu 24.04 + ROS2 Jazzy
+Additionally, extra credit was attempted by defining a custom ROS2 message type to publish performance metrics.
 
-### Required Packages
-```bash
-sudo apt install ros-$ROS_DISTRO-turtlesim
-sudo apt install ros-$ROS_DISTRO-rqt*
-```
+---
 
-### Python Dependencies
-```bash
-pip3 install numpy matplotlib
-```
+## Performance Metrics
 
-## The Challenge
+- **Final Parameters:**
 
-### 1. Controller Tuning (60 points)
-Use rqt_reconfigure to tune the following PD controller parameters in real-time:
-```python
-# Controller parameters to tune
-self.Kp_linear = 1.0   # Proportional gain for linear velocity
-self.Kd_linear = 0.1   # Derivative gain for linear velocity
-self.Kp_angular = 1.0  # Proportional gain for angular velocity
-self.Kd_angular = 0.1  # Derivative gain for angular velocity
-```
+  - `Kp_linear`: 2.8
+  - `Kd_linear`: 0.02
+  - `Kp_angular`: 11.8
+  - `Kd_angular`: 0.03
+  - `spacing`: 1.5
 
-Performance Metrics:
-- Average cross-track error (25 points)
-- Maximum cross-track error (15 points)
-- Smoothness of motion (10 points)
-- Cornering performance (10 points)
+- **Performance Results:**
 
-### 2. Pattern Parameters (20 points)
-Optimize the boustrophedon pattern parameters:
-```python
-# Pattern parameters to tune
-self.spacing = 1.0     # Spacing between lines
-```
-- Coverage efficiency (10 points)
-- Pattern completeness (10 points)
+  - **Average Cross-Track Error**: 0.028 units
+  - **Maximum Cross-Track Error**: 0.08 units
+  - Smooth motion and clean cornering were achieved.
 
-### 3. Analysis and Documentation (20 points)
-Provide a detailed analysis of your tuning process:
-- Methodology used for tuning
-- Performance plots and metrics
-- Challenges encountered and solutions
-- Comparison of different parameter sets
+---
 
-## Getting Started
+## Extra Credit Progress
 
-### Repository Setup
-1. Fork the course repository:
-   - Visit: https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI
-   - Click "Fork" in the top-right corner
-   - Select your GitHub account as the destination
+### Custom Message Type Integration
 
-2. Clone your fork (outside of ros2_ws):
-```bash
-cd ~/
-git clone https://github.com/YOUR_USERNAME/RAS-SES-598-Space-Robotics-and-AI.git
-```
+As part of the extra credit, I implemented the initial steps of integrating a custom ROS2 message type to publish detailed performance metrics. Below is a summary of the work completed:
 
-3. Create a symlink to the assignment in your ROS2 workspace:
-```bash
-cd ~/ros2_ws/src
-ln -s ~/RAS-SES-598-Space-Robotics-and-AI/assignments/first_order_boustrophedon_navigator .
-```
+1. **Creating the Custom Message Package:**
 
-### Building and Running
-1. Build the package:
-```bash
-cd ~/ros2_ws
-colcon build --packages-select first_order_boustrophedon_navigator
-source install/setup.bash
-```
+   - A new package `custom_msgs` was created using the following commands:
+     ```bash
+     cd ~/Dhiren_ws/src
+     ros2 pkg create custom_msgs --build-type ament_cmake --dependencies std_msgs
+     ```
+   - A message definition file `NavigatorMetrics.msg` was added with the following fields:
+     ```
+     float64 cross_track_error
+     float64 current_velocity
+     float64 distance_to_next_waypoint
+     float64 completion_percentage
+     string status_message
+     ```
+   - The `CMakeLists.txt` and `package.xml` files were updated to include the necessary configurations for generating custom messages.
+   - The package was built successfully:
+     ```bash
+     cd ~/Dhiren_ws
+     colcon build --packages-select custom_msgs
+     ```
 
-2. Launch the demo:
-```bash
-ros2 launch first_order_boustrophedon_navigator boustrophedon.launch.py
-```
+2. **Using the Custom Message in the Node:**
 
-3. Monitor performance:
-```bash
-# View cross-track error as a number
-ros2 topic echo /cross_track_error
+   - The `first_order_boustrophedon_navigator` package was modified to use the `custom_msgs` package. This included:
+     - Adding `custom_msgs` as a dependency in `package.xml`.
+     - Importing the custom message type in the Python node:
+       ```python
+       from custom_msgs.msg import NavigatorMetrics
+       ```
 
-# Or view detailed statistics in the launch terminal
-```
+I tried to proceed beyond this but was not successfully able to complete it yet. I have an idea of what to do and will work on it further. Once resolved, I plan to push the updated code.
 
-4. Visualize trajectory and performance:
-```bash
-ros2 run rqt_plot rqt_plot
-```
-Add these topics:
-- /turtle1/pose/x
-- /turtle1/pose/y
-- /turtle1/cmd_vel/linear/x
-- /turtle1/cmd_vel/angular/z
-- /cross_track_error
+---
 
-## Evaluation Criteria
+## Parameter Adjustments
 
-1. Controller Performance (60%)
-   - Average cross-track error < 0.2 units (25%)
-   - Maximum cross-track error < 0.5 units (15%)
-   - Smooth velocity profiles (10%)
-   - Clean cornering behavior (10%)
+### Initial Parameters
 
-2. Pattern Quality (20%)
-   - Even spacing between lines
-   - Complete coverage of target area
-   - Efficient use of space
+- `Kp_linear`: 10.0
+- `Kd_linear`: 0.1
+- `Kp_angular`: 5.0
+- `Kd_angular`: 0.2
+- `spacing`: 1.0
 
-3. Documentation (20%)
-   - Clear explanation of tuning process
-   - Well-presented performance metrics
-   - Thoughtful analysis of results
+### Adjustments Made
 
-## Submission Requirements
+1. **Proportional Gain for Linear Velocity:**
 
-1. GitHub Repository:
-   - Commit messages should be descriptive
+   - Initial value: `10.0`
+   - Final value: `2.8`
+   - **Reason**: The high initial value caused oscillations and overshooting in the linear velocity. Reducing it improved stability and allowed smoother transitions between segments.
 
-2. Documentation in Repository:
-   - Update the README.md in your fork with:
-     - Final parameter values with justification
-     - Performance metrics and analysis
-     - Plots showing:
-       - Cross-track error over time
-       - Trajectory plot
-       - Velocity profiles
-     - Discussion of tuning methodology
-     - Challenges and solutions
+2. **Derivative Gain for Linear Velocity:**
 
-3. Submit your work:
-   - Submit the URL of your GitHub repository
-   - Ensure your repository is public
-   - Final commit should be before the deadline
+   - Initial value: `0.1`
+   - Final value: `0.02`
+   - **Reason**: A lower derivative gain helped reduce abrupt changes in velocity, leading to smoother motion.
 
-## Tips for Success
-- Start with low gains and increase gradually
-- Test one parameter at a time
-- Pay attention to both straight-line tracking and cornering
-- Use rqt_plot to visualize performance in real-time
-- Consider the trade-off between speed and accuracy
+3. **Proportional Gain for Angular Velocity:**
 
-## Grading Rubric
-- Perfect tracking (cross-track error < 0.2 units): 100%
-- Good tracking (cross-track error < 0.5 units): 90%
-- Acceptable tracking (cross-track error < 0.8 units): 80%
-- Poor tracking (cross-track error > 0.8 units): 60% or lower
+   - Initial value: `5.0`
+   - Final value: `11.8`
+   - **Reason**: Increasing the angular proportional gain enabled sharper and more accurate turns, which minimized deviations during cornering.
 
-Note: Final grade will also consider documentation quality and analysis depth.
+4. **Derivative Gain for Angular Velocity:**
 
-## Extra Credit (10 points)
-Create and implement a custom ROS2 message type to publish detailed performance metrics:
-- Define a custom message type with fields for:
-  - Cross-track error
-  - Current velocity
-  - Distance to next waypoint
-  - Completion percentage
-  - Other relevant metrics
-- Implement the message publisher in your node
-- Document the message structure and usage
+   - Initial value: `0.2`
+   - Final value: `0.03`
+   - **Reason**: The reduced derivative gain allowed for smoother adjustments in angular velocity without overcompensating.
 
-This will demonstrate understanding of:
-- ROS2 message definitions
-- Custom interface creation
-- Message publishing patterns 
+5. **Spacing:**
+
+   - Initial value: `1.0`
+   - Final value: `1.5`
+   - **Reason**: Increasing the spacing between rows enhanced coverage efficiency without sacrificing completeness.
+
+---
+
+## Methodology
+
+The tuning process involved iterative testing and visualization using `rqt_plot` and `ros2 topic echo`. Each parameter was adjusted individually to observe its effect on performance metrics like cross-track error, velocity profiles, and cornering behavior.
+
+### Challenges and Solutions
+
+- **Oscillations in Linear Velocity**: Addressed by reducing `Kp_linear` and `Kd_linear`.
+- **Imprecise Cornering**: Resolved by increasing `Kp_angular` and fine-tuning `Kd_angular`.
+- **Row Overlap**: Improved by increasing the `spacing` parameter.
+
+---
+
+## Attachments
+
+1. **Execution Videos:**
+
+   Google Drive link to the videos of the entire execution: https://drive.google.com/drive/folders/1K2Ki4LxZDIjS1F74YU6j1IUDI9-FShzz?usp=sharing
+
+---
+
+## Future Work
+
+- **Complete Extra Credit**: Implement steps to test and visualize the custom message integration fully.
+- **Performance Optimization**: Further refine parameters to reduce the average cross-track error below 0.02 units.
+
+---
+
+## Conclusion
+
+This project provided valuable insights into PD controller tuning and trajectory optimization. The implementation of a custom message type highlights the versatility of ROS2 and sets the stage for advanced performance monitoring in future assignments.
+
+---
+
