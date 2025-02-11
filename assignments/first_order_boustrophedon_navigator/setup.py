@@ -17,7 +17,10 @@ setup(
         (os.path.join('share', package_name, 'config'), glob('config/*')),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'custom_msgs'  # Add this line
+    ],
     zip_safe=True,
     maintainer='jdas',
     maintainer_email='jnaneshwar.das@gmail.com',
@@ -26,7 +29,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'boustrophedon_controller = first_order_boustrophedon_navigator.boustrophedon_controller:main'
+            'boustrophedon_controller = first_order_boustrophedon_navigator.boustrophedon_controller:main',
         ],
     },
-) 
+)
