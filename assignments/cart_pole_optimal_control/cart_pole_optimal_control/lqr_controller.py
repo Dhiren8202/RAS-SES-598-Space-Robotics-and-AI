@@ -6,6 +6,9 @@ from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 import numpy as np
 from scipy import linalg
+import matplotlib.pyplot as plt
+import csv
+import time
 
 class CartPoleLQRController(Node):
     def __init__(self):
@@ -33,8 +36,8 @@ class CartPoleLQRController(Node):
         ])
         
         # LQR cost matrices
-        self.Q = np.diag([1.0, 1.0, 10.0, 10.0])  # State cost
-        self.R = np.array([[0.1]])  # Control cost
+        self.Q = np.diag([200.0, 50.0, 150.0, 75.0])  # State cost
+        self.R = np.array([[0.01]])  # Control cost
         
         # Compute LQR gain matrix
         self.K = self.compute_lqr_gain()
@@ -45,6 +48,10 @@ class CartPoleLQRController(Node):
         self.state_initialized = False
         self.last_control = 0.0
         self.control_count = 0
+        
+        # Data logging
+        self.log_data = []
+        self.start_time = time.time()
         
         # Create publishers and subscribers
         self.cart_cmd_pub = self.create_publisher(
@@ -117,18 +124,73 @@ class CartPoleLQRController(Node):
             msg.data = force
             self.cart_cmd_pub.publish(msg)
             
+            # Log data
+            elapsed_time = time.time() - self.start_time
+            self.log_data.append([elapsed_time, self.x[0, 0], self.x[1, 0], self.x[2, 0], self.x[3, 0], force])
+            
             self.last_control = force
             self.control_count += 1
             
         except Exception as e:
             self.get_logger().error(f'Control loop error: {e}')
 
+    def save_and_plot_data(self):
+        """Save logged data to CSV and generate plots."""
+        # Save data to CSV
+        with open('lqr_performance.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['time', 'x', 'x_dot', 'theta', 'theta_dot', 'force'])
+            writer.writerows(self.log_data)
+        
+        # Load data for plotting
+        data = np.array(self.log_data)
+        time = data[:, 0]
+        x = data[:, 1]
+        x_dot = data[:, 2]
+        theta = data[:, 3]
+        theta_dot = data[:, 4]
+        force = data[:, 5]
+
+        # Plot cart position
+        plt.figure(figsize=(12, 8))
+        plt.subplot(3, 1, 1)
+        plt.plot(time, x, label='Cart Position (m)')
+        plt.axhline(y=0.5, color='r', linestyle='--', label='Safe Limit')
+        plt.axhline(y=-0.5, color='r', linestyle='--')
+        plt.ylabel('Cart Position (m)')
+        plt.legend()
+
+        # Plot pendulum angle
+        plt.subplot(3, 1, 2)
+        plt.plot(time, theta * 180/np.pi, label='Pendulum Angle (°)')
+        plt.axhline(y=3, color='r', linestyle='--', label='Stability Threshold')
+        plt.axhline(y=-3, color='r', linestyle='--')
+        plt.ylabel('Pendulum Angle (°)')
+        plt.legend()
+
+        # Plot control force
+        plt.subplot(3, 1, 3)
+        plt.plot(time, force, label='Control Force (N)')
+        plt.ylabel('Control Force (N)')
+        plt.xlabel('Time (s)')
+        plt.legend()
+
+        plt.suptitle('LQR Controller Performance')
+        plt.tight_layout()
+        plt.savefig('lqr_performance.png')
+        plt.show()
+
 def main(args=None):
     rclpy.init(args=args)
     controller = CartPoleLQRController()
-    rclpy.spin(controller)
-    controller.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(controller)
+    except KeyboardInterrupt:
+        controller.get_logger().info('Shutting down controller...')
+        controller.save_and_plot_data()
+    finally:
+        controller.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
-    main() 
+    main()

@@ -1,0 +1,36 @@
+[1.040s] Invoking command in '/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PS1=(myenv) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ PYTHONPATH=/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(myenv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/build --no-deps symlink_data
+[1.321s] running develop
+[1.440s] running egg_info
+[1.440s] creating cart_pole_optimal_control.egg-info
+[1.452s] writing cart_pole_optimal_control.egg-info/PKG-INFO
+[1.452s] writing dependency_links to cart_pole_optimal_control.egg-info/dependency_links.txt
+[1.452s] writing entry points to cart_pole_optimal_control.egg-info/entry_points.txt
+[1.452s] writing requirements to cart_pole_optimal_control.egg-info/requires.txt
+[1.452s] writing top-level names to cart_pole_optimal_control.egg-info/top_level.txt
+[1.452s] writing manifest file 'cart_pole_optimal_control.egg-info/SOURCES.txt'
+[1.475s] reading manifest file 'cart_pole_optimal_control.egg-info/SOURCES.txt'
+[1.476s] writing manifest file 'cart_pole_optimal_control.egg-info/SOURCES.txt'
+[1.488s] running build_ext
+[1.488s] Creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/python3.12/site-packages/cart-pole-optimal-control.egg-link (link to .)
+[1.488s] Installing earthquake_force_generator script to /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/cart_pole_optimal_control
+[1.488s] Installing force_visualizer script to /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/cart_pole_optimal_control
+[1.488s] Installing lqr_controller script to /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/cart_pole_optimal_control
+[1.488s] Installing state_republisher script to /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/cart_pole_optimal_control
+[1.489s] 
+[1.489s] Installed /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control
+[1.489s] running symlink_data
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/ament_index
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/ament_index/resource_index
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/ament_index/resource_index/packages
+[1.489s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/resource/cart_pole_optimal_control -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/ament_index/resource_index/packages
+[1.489s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/package.xml -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/launch
+[1.489s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/launch/cart_pole_rviz.launch.py -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/launch
+[1.489s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/launch/cart_pole.launch.py -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/launch
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/config
+[1.489s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/config/cart_pole.rviz -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/config
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/models
+[1.489s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/models/cart_pole
+[1.490s] symbolically linking /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/models/cart_pole/model.urdf -> /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/models/cart_pole
+[1.490s] creating /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/share/cart_pole_optimal_control/models/cart_pole/meshes
+[1.510s] Invoked command in '/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PS1=(myenv) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ PYTHONPATH=/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/dhiren/RAS-SES-598-Space-Robotics-and-AI/install/cart_pole_optimal_control/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(myenv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/dhiren/RAS-SES-598-Space-Robotics-and-AI/build/cart_pole_optimal_control/build --no-deps symlink_data
