@@ -6,6 +6,7 @@ from sensor_msgs.msg import PointCloud2
 import ros2_numpy
 import open3d as o3d
 import numpy as np
+import os
 
 class PointCloudSaver(Node):
     def __init__(self):
@@ -15,33 +16,39 @@ class PointCloudSaver(Node):
             '/drone/front_depth/points',
             self.listener_callback,
             10)
-        self.subscription  # prevent unused variable warning
+        self.subscription
         self.received = False
+
+        # Ensure save directory exists
+        self.output_dir = 'pointcloud_data'
+        os.makedirs(self.output_dir, exist_ok=True)
 
     def listener_callback(self, msg):
         if not self.received:
             self.get_logger().info('Received point cloud — saving to file...')
 
-            # Convert ROS2 PointCloud2 to structured numpy array
+            # Convert to NumPy structured array
             pc_np = ros2_numpy.numpify(msg)
 
-            # Extract XYZ values, filtering out NaNs
+            # Extract XYZ with NaN filtering
             xyz = np.array([
-                [p['x'], p['y'], p['z']]
+                [p['x'].item(), p['y'].item(), p['z'].item()]
                 for p in pc_np
                 if not np.isnan(p['x']) and not np.isnan(p['y']) and not np.isnan(p['z'])
             ])
 
             if xyz.size == 0:
-                self.get_logger().warn("No valid 3D points found in point cloud.")
+                self.get_logger().warn("No valid points found.")
                 return
 
-            # Convert to Open3D point cloud and save
+            # Save using Open3D
             pc_o3d = o3d.geometry.PointCloud()
             pc_o3d.points = o3d.utility.Vector3dVector(xyz)
-            o3d.io.write_point_cloud("spiral_frame.ply", pc_o3d)
 
-            self.get_logger().info('Point cloud saved as spiral_frame.ply')
+            filepath = os.path.join(self.output_dir, "spiral_frame.ply")
+            o3d.io.write_point_cloud(filepath, pc_o3d)
+
+            self.get_logger().info(f"Point cloud saved to {filepath}")
             self.received = True
 
 def main(args=None):
