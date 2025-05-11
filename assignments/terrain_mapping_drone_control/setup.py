@@ -7,7 +7,7 @@ package_name = 'terrain_mapping_drone_control'
 setup(
     name=package_name,
     version='0.0.1',
-    packages=[package_name],
+    packages=find_packages(include=['terrain_mapping_drone_control', 'terrain_mapping_drone_control.*']),
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -54,9 +54,9 @@ setup(
             'px4_odom_converter = terrain_mapping_drone_control.px4_odom_converter:main',
             'feature_tracker = terrain_mapping_drone_control.feature_tracker:main',
             'pose_visualizer = terrain_mapping_drone_control.pose_visualizer:main',
-            'spiral_trajectory = terrain_mapping_drone_control.spiral_trajectory:main',
+            'spiral_trajectory_controller = terrain_mapping_drone_control.spiral_trajectory_controller:main',
             'aruco_tracker = terrain_mapping_drone_control.aruco_tracker:main',
         ],
     },
     python_requires='>=3.8'
-) 
+)
