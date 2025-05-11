@@ -1,129 +1,100 @@
-# Assignment 3: Rocky Times Challenge - Search, Map, & Analyze
+# Terrain Mapping and Autonomous Drone Control
 
-This ROS2 package implements an autonomous drone system for geological feature detection, mapping, and analysis using an RGBD camera and PX4 SITL simulation.
+This project implements a drone control system capable of autonomous spiral trajectory navigation, real-time environment perception, and precision landing using ArUco markers.
 
-## Challenge Overview
+## Features Implemented
 
-Students will develop a controller for a PX4-powered drone to efficiently search, map, and analyze cylindrical rock formations in an unknown environment. The drone must identify two rock formations (10m and 7m tall cylinders), estimate their dimensions, and successfully land on top of the taller cylinder.
+### Spiral Trajectory Navigation
 
-### Mission Objectives
-1. Search and locate all cylindrical rock formations
-2. Map and analyze rock dimensions:
-   - Estimate height and diameter of each cylinder
-   - Determine positions in the world frame
-3. Land safely on top of the taller cylinder
-4. Complete mission while logging time and energy performance. 
+The drone successfully performs a descending spiral trajectory from an initial height. This trajectory is executed using PX4 offboard control by publishing `TrajectorySetpoint` messages via ROS 2.
 
-![Screenshot from 2025-03-04 20-22-35](https://github.com/user-attachments/assets/3548b6da-613a-401d-bf38-e9e3ac4a2a2b)
+* The spiral starts at 20 meters altitude.
+* The drone maintains yaw alignment and performs a gradual descent in a circular pattern.
+* Gimbal stabilization and orientation tracking are integrated during the flight.
 
-### Evaluation Criteria (100 points)
+### ArUco Marker Detection *(In Progress / Integrated)*
 
-The assignment will be evaluated based on:
-- Total time taken to complete the mission
-- Total energy units consumed during operation
-- Accuracy of cylinder dimension estimates
-- Landing precision on the taller cylinder
-- Performance across multiple trials (10 known + 5 unknown scenes)
+We developed an ArUco detection node using OpenCV that subscribes to the drone’s camera feed and:
 
-### Key Requirements
+* Detects ArUco markers using the `cv2.aruco` module.
+* Estimates the 3D pose of each marker.
+* Publishes the pose as a `geometry_msgs/PoseStamped` message to the `/aruco_marker/pose` topic.
 
-- Autonomous takeoff and search strategy implementation
-- Real-time cylinder detection and dimension estimation
-- Energy-conscious path planning
-- Safe and precise landing on the target cylinder
-- Robust performance across different scenarios
+This lays the foundation for visual servoing and precision landing.
 
-## Prerequisites
+### Precision Landing Over ArUco Marker *(In Progress / Integrated)*
 
-- ROS2 Humble
-- PX4 SITL Simulator (Tested with PX4-Autopilot main branch 9ac03f03eb)
-- RTAB-Map ROS2 package
-- OpenCV
-- Python 3.8+
+An autonomous landing node was added to:
 
-## Repository Setup
+* Subscribe to the ArUco marker pose.
+* Continuously align the drone above the marker.
+* Trigger a landing maneuver once the drone is within a small threshold (10 cm) of the marker’s center.
 
-### If you already have a fork of the course repository:
+This node publishes trajectory setpoints for alignment and sends `VehicleCommand` to initiate landing using PX4.
 
-```bash
-# Navigate to your local copy of the repository
-cd ~/RAS-SES-598-Space-Robotics-and-AI
+---
 
-# Add the original repository as upstream (if not already done)
-git remote add upstream https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI.git
+## Project Structure
 
-# Fetch the latest changes from upstream
-git fetch upstream
-
-# Checkout your main branch
-git checkout main
-
-# Merge upstream changes
-git merge upstream/main
-
-# Push the updates to your fork
-git push origin main
+```
+terrain_mapping_drone_control/
+├── launch/
+├── models/
+├── config/
+├── scripts/
+│   ├── save_pointcloud_node.py           # (for later point cloud saving)
+├── terrain_mapping_drone_control/
+│   ├── spiral_trajectory_controller.py   # spiral trajectory execution
+│   ├── aruco_tracker.py                  # ArUco detection + pose publishing
+│   ├── cylinder_landing_node.py          # ArUco-based autonomous landing
 ```
 
-### If you don't have a fork yet:
+---
 
-1. Fork the course repository:
-   - Visit: https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI
-   - Click "Fork" in the top-right corner
-   - Select your GitHub account as the destination
+## How to Run
 
-2. Clone your fork:
-```bash
-cd ~/
-git clone https://github.com/YOUR_USERNAME/RAS-SES-598-Space-Robotics-and-AI.git
-```
-
-### Create Symlink to ROS2 Workspace
+### 1. Run PX4 Autopilot + Gazebo
 
 ```bash
-# Create symlink in your ROS2 workspace
-cd ~/ros2_ws/src
-ln -s ~/RAS-SES-598-Space-Robotics-and-AI/assignments/terrain_mapping_drone_control .
+make px4_sitl gazebo
 ```
 
-### Copy PX4 Model Files
-
-Copy the custom PX4 model files to the PX4-Autopilot folder
+### 2. Launch RViz (optional for visualization)
 
 ```bash
-# Navigate to the package
-cd ~/ros2_ws/src/terrain_mapping_drone_control
-
-# Make the setup script executable
-chmod +x scripts/deploy_px4_model.sh
-
-# Run the setup script to copy model files
-./scripts/deploy_px4_model.sh -p /path/to/PX4-Autopilot
+rviz2
 ```
 
-## Building and Running
+### 3. Run the spiral trajectory node
 
 ```bash
-# Build the package
-cd ~/ros2_ws
-colcon build --packages-select terrain_mapping_drone_control --symlink-install
-
-# Source the workspace
-source install/setup.bash
-
-# Launch the simulation with visualization with your PX4-Autopilot path
-ros2 launch terrain_mapping_drone_control cylinder_landing.launch.py
-
-# OR you can change the default path in the launch file
-        DeclareLaunchArgument(
-            'px4_autopilot_path',
-            default_value=os.environ.get('HOME', '/home/' + os.environ.get('USER', 'user')) + '/PX4-Autopilot',
-            description='Path to PX4-Autopilot directory'),
+python3 src/terrain_mapping_drone_control/terrain_mapping_drone_control/spiral_trajectory_controller.py
 ```
-## Extra credit -- 3D reconstruction (50 points)
-Use RTAB-Map or a SLAM ecosystem of your choice to map both rocks, and export the world as a mesh file, and upload to your repo. Use git large file system (LFS) if needed. 
 
-## License
+### 4. Run the ArUco detection node
 
-This assignment is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). 
-For more details: https://creativecommons.org/licenses/by-nc-sa/4.0/ 
+```bash
+python3 src/terrain_mapping_drone_control/terrain_mapping_drone_control/aruco_tracker.py
+```
+
+### 5. Run the autonomous landing controller
+
+```bash
+python3 src/terrain_mapping_drone_control/terrain_mapping_drone_control/cylinder_landing_node.py
+```
+
+---
+
+## Future Scope
+
+* Estimate cylinder height from captured point clouds using Open3D.
+* Improve ArUco marker robustness using Kalman filtering.
+* Integrate SLAM-based localization for drift correction.
+* Enable multi-marker tracking for prioritized landing.
+
+
+## Google Drive Link to Demo Video : https://drive.google.com/file/d/11piGprLGRdePsd7EuLd6nS774QlhrQOj/view?usp=sharing
+---
+
+**Author:** Dhiren Makwana
+**Last updated:** May 11, 2025
